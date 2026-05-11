@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Interactive World Capitals Map</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    body{
+        font-family: Arial, sans-serif;
+        background:#0f172a;
+        color:white;
+        overflow:hidden;
+    }
+
+    #map{
+        width:100vw;
+        height:100vh;
+    }
+
+    .title{
+        position:absolute;
+        top:15px;
+        left:50%;
+        transform:translateX(-50%);
+        z-index:999;
+        background:rgba(15,23,42,0.9);
+        padding:12px 24px;
+        border-radius:12px;
+        font-size:22px;
+        font-weight:bold;
+        letter-spacing:1px;
+        box-shadow:0 0 15px rgba(0,0,0,0.5);
+    }
+
+    .leaflet-popup-content-wrapper{
+        background:#1e293b;
+        color:white;
+        border-radius:10px;
+    }
+
+    .leaflet-popup-tip{
+        background:#1e293b;
+    }
+
+    .city-name{
+        font-size:18px;
+        font-weight:bold;
+        color:#38bdf8;
+    }
+
+    .coords{
+        margin-top:6px;
+        font-size:14px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="title">
+    Interactive World Capitals Map
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+const cities = [
+    
+    {
+        name: "Manila, Philippines",
+        lat: 14.60,
+        lon: 120.98
+    },
+    {
+        name: "Shanghai, China",
+        lat: 31.23,
+        lon: 121.47
+    },
+    {
+        name: "São Paulo, Brazil",
+        lat: -23.55,
+        lon: -46.63
+    },
+    {
+        name: "Mexico City, Mexico",
+        lat: 19.43,
+        lon: -99.13
+    },
+    {
+        name: "Cairo, Egypt",
+        lat: 30.04,
+        lon: 31.24
+    },
+    {
+        name: "New York, USA",
+        lat: 40.69,
+        lon: -73.92
+    },
+    {
+        name: "Bangkok, Thailand",
+        lat: 13.75,
+        lon: 100.49
+    },
+    {
+        name: "Moscow, Russia",
+        lat: 55.75,
+        lon: 37.62
+    },
+    {
+        name: "Buenos Aires, Argentina",
+        lat: -34.60,
+        lon: -58.38
+    },
+    {
+        name: "London, UK",
+        lat: 51.51,
+        lon: -0.13
+    },
+    {
+        name: "Paris, France",
+        lat: 48.86,
+        lon: 2.35
+    },
+    {
+        name: "Los Angeles, USA",
+        lat: 34.11,
+        lon: -118.41
+    }
+];
+
+
+// Create map
+const map = L.map('map', {
+    worldCopyJump:true
+}).setView([20, 0], 2);
+
+
+// Dark map tiles
+L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    {
+        attribution:'© OpenStreetMap © CARTO'
+    }
+).addTo(map);
+
+
+// Add animated markers
+cities.forEach(city => {
+
+    const marker = L.circleMarker(
+        [city.lat, city.lon],
+        {
+            radius:8,
+            fillColor:"#38bdf8",
+            color:"#ffffff",
+            weight:2,
+            opacity:1,
+            fillOpacity:0.9
+        }
+    ).addTo(map);
+
+    marker.bindPopup(`
+        <div class="city-name">${city.name}</div>
+        <div class="coords">
+            Latitude: ${city.lat}<br>
+            Longitude: ${city.lon}
+        </div>
+    `);
+
+    // Animation effect
+    let growing = true;
+
+    setInterval(() => {
+
+        let currentRadius = marker.getRadius();
+
+        if(growing){
+            currentRadius += 0.3;
+            if(currentRadius >= 12){
+                growing = false;
+            }
+        } else {
+            currentRadius -= 0.3;
+            if(currentRadius <= 8){
+                growing = true;
+            }
+        }
+
+        marker.setRadius(currentRadius);
+
+    }, 60);
+
+});
+
+</script>
+
+</body>
+</html>
